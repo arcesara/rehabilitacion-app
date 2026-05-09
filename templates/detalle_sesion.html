@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Sesión {{ sesion.fecha.strftime('%d/%m/%Y') }} — RehabPlat{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{{ url_for('historial') }}" class="btn-back">← Historial</a>
+  <h2>Sesión del {{ sesion.fecha.strftime('%d de %B de %Y') }}</h2>
+  <p>{{ sesion.fecha.strftime('%H:%M') }}h</p>
+</div>
+
+<div class="detalle-grid">
+  <div class="detalle-stats">
+    <div class="stat-card">
+      <strong>{{ sesion.reps_total }}</strong>
+      <span>Repeticiones</span>
+    </div>
+    <div class="stat-card">
+      <strong>{{ sesion.hr_medio }}</strong>
+      <span>BPM medio</span>
+    </div>
+    <div class="stat-card">
+      <strong>{{ (sesion.duracion_s / 60) | round(1) }}</strong>
+      <span>Minutos</span>
+    </div>
+  </div>
+</div>
+
+<div class="detalle-charts">
+  <h3>Evolución durante la sesión</h3>
+  <canvas id="hr-chart"></canvas>
+  <h3>Distribución del peso por repetición</h3>
+  <canvas id="force-chart"></canvas>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const datos = {{ sesion.datos_json | safe }};
+const muestras = datos.muestras || [];
+const reps = datos.repeticiones || [];
+
+// Heart rate chart
+const hrCtx = document.getElementById('hr-chart').getContext('2d');
+new Chart(hrCtx, {
+  type: 'line',
+  data: {
+    labels: muestras.map((_, i) => i),
+    datasets: [{
+      label: 'Heart rate (bpm)',
+      data: muestras.map(m => m.heartrate),
+      borderColor: '#ef4444',
+      backgroundColor: 'rgba(239,68,68,0.1)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { x: { display: false }, y: { beginAtZero: false } }
+  }
+});
+
+// Force chart por repetición
+if (reps.length > 0) {
+  const forceCtx = document.getElementById('force-chart').getContext('2d');
+  new Chart(forceCtx, {
+    type: 'bar',
+    data: {
+      labels: reps.map((r, i) => `Rep ${i+1}`),
+      datasets: [
+        {
+          label: 'Pie izquierdo (N)',
+          data: reps.map(r => {
+            const f = r.force_izq || {};
+            return Object.values(f).reduce((a,b) => a+b, 0);
+          }),
+          backgroundColor: 'rgba(59,130,246,0.7)',
+        },
+        {
+          label: 'Pie derecho (N)',
+          data: reps.map(r => {
+            const f = r.force_der || {};
+            return Object.values(f).reduce((a,b) => a+b, 0);
+          }),
+          backgroundColor: 'rgba(16,185,129,0.7)',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+</script>
+{% endblock %}
