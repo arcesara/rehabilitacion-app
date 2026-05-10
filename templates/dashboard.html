@@ -2,20 +2,20 @@
 {% block title %}Inicio — RehabPlat{% endblock %}
 {% block content %}
 <div class="page-header">
-  <h2>Hola, {{ usuario.nombre }} 👋</h2>
+  <h2>Hola, {{ usuario.nombre }} </h2>
   <p>Bienvenido a tu plataforma de rehabilitación plantar</p>
 </div>
 
 <div class="cards-grid">
   <div class="card">
-    <div class="card-icon">🦶</div>
+    <div class="card-icon"></div>
     <h3>Iniciar ejercicio</h3>
     <p>Colócate sobre la plataforma y comienza tu sesión de rehabilitación</p>
     <a href="{{ url_for('ejercicio') }}" class="btn-primary">Ir al ejercicio</a>
   </div>
 
   <div class="card">
-    <div class="card-icon">📊</div>
+    <div class="card-icon"></div>
     <h3>Mi historial</h3>
     <p>Consulta tus sesiones anteriores y revisa tu evolución</p>
     <a href="{{ url_for('historial') }}" class="btn-secondary">Ver historial</a>
