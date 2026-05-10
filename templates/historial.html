@@ -15,9 +15,9 @@
       <span>{{ s.fecha.strftime('%H:%M') }}</span>
     </div>
     <div class="historial-stats">
-      <span>🔁 {{ s.reps_total }} reps</span>
-      <span>❤️ {{ s.hr_medio }} bpm</span>
-      <span>⏱ {{ (s.duracion_s / 60) | round(1) }} min</span>
+      <span>{{ s.reps_total }} reps</span>
+      <span>{{ s.hr_medio }} bpm</span>
+      <span>{{ (s.duracion_s / 60) | round(1) }} min</span>
     </div>
     <div class="historial-arrow">›</div>
   </a>
@@ -25,7 +25,7 @@
 </div>
 {% else %}
 <div class="empty-state">
-  <p>🦶 Todavía no tienes sesiones registradas</p>
+  <p>Todavía no tienes sesiones registradas</p>
   <a href="{{ url_for('ejercicio') }}" class="btn-primary">Empezar primer ejercicio</a>
 </div>
 {% endif %}
