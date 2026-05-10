@@ -100,7 +100,10 @@ def dashboard():
     if 'usuario_id' not in session:
         return redirect(url_for('login'))
     usuario = Usuario.query.get(session['usuario_id'])
-    ultima  = Sesion.query.filter_by(usuario_id=usuario.id).order_by(Sesion.fecha.desc()).first()
+    if usuario is None:
+        session.clear()
+        return redirect(url_for('login'))
+    ultima = Sesion.query.filter_by(usuario_id=usuario.id).order_by(Sesion.fecha.desc()).first()
     return render_template('dashboard.html', usuario=usuario, ultima_sesion=ultima)
 
 @app.route('/ejercicio')
