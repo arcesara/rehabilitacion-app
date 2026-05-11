@@ -224,7 +224,7 @@ window.actualizarHeatmaps = function(force_izq, force_der) {
       talon: force_izq.talon_izq || 0,
       adel_izq: force_izq.adelante_izq || 0,
       adel_der: force_izq.adelante_centro || 0,
-    }, false);
+    }, true);
     const t = (force_izq.talon_izq||0)+(force_izq.adelante_izq||0)+(force_izq.adelante_centro||0);
     document.getElementById('iz-total').textContent = t.toFixed(1);
   }
@@ -233,14 +233,14 @@ window.actualizarHeatmaps = function(force_izq, force_der) {
       talon: force_der.talon_der || 0,
       adel_izq: force_der.adelante_centro || 0,
       adel_der: force_der.adelante_der || 0,
-    }, true);
+    }, false);
     const t = (force_der.talon_der||0)+(force_der.adelante_centro||0)+(force_der.adelante_der||0);
     document.getElementById('der-total').textContent = t.toFixed(1);
   }
 };
 
-renderizarHeatmap('canvas-izq', {talon:0, adel_izq:0, adel_der:0}, false);
-renderizarHeatmap('canvas-der', {talon:0, adel_izq:0, adel_der:0}, true);
+renderizarHeatmap('canvas-izq', {talon:0, adel_izq:0, adel_der:0}, true);
+renderizarHeatmap('canvas-der', {talon:0, adel_izq:0, adel_der:0}, false);
 </script>
 
 <style>
