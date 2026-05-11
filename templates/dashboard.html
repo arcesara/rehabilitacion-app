@@ -26,6 +26,13 @@
     <a href="{{ url_for('lista_ejercicios') }}" class="btn-secondary">Ver ejercicios</a>
   </div>
 
+  <!-- Ver historial -->
+  <div class="card">
+    <h3>Mi historial</h3>
+    <p>Consulta todas tus sesiones anteriores y revisa tu evolución.</p>
+    <a href="{{ url_for('historial') }}" class="btn-secondary">Ver historial</a>
+  </div>
+
   <!-- Última sesión -->
   {% if ultima_sesion %}
   <div class="card">
