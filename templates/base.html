@@ -13,7 +13,7 @@
     <div class="nav-brand">RehabPlat</div>
     <div class="nav-links">
       <a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}>Inicio</a>
-      <a href="{{ url_for('ejercicio') }}" {% if request.endpoint == 'ejercicio' %}class="active"{% endif %}>Ejercicio</a>
+      <a href="{{ url_for('lista_ejercicios') }}" {% if request.endpoint in ['lista_ejercicios', 'ejercicio'] %}class="active"{% endif %}>Ejercicio</a>
       <a href="{{ url_for('historial') }}" {% if request.endpoint == 'historial' %}class="active"{% endif %}>Historial</a>
       <a href="{{ url_for('logout') }}" class="btn-logout">Salir</a>
     </div>
