@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Inicio — RehabPlat{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2>Hola, {{ usuario.nombre }}</h2>
+  <p>Bienvenido a tu plataforma de rehabilitación plantar</p>
+</div>
+
+<div class="cards-grid">
+
+  <!-- Continuar donde lo dejó -->
+  <div class="card card-highlight">
+    <div class="card-tag">Continuar</div>
+    <h3>{{ ejercicio_actual.nombre }}</h3>
+    <p>{{ ejercicio_actual.descripcion }}</p>
+    <div class="nivel-badge">Nivel {{ nivel_actual }} — {{ nivel_config.reps }} repeticiones</div>
+    <a href="{{ url_for('ejercicio', ejercicio_id=ejercicio_actual_id, nivel=nivel_actual) }}" class="btn-primary">
+      Comenzar nivel {{ nivel_actual }}
+    </a>
+  </div>
+
+  <!-- Todos los ejercicios -->
+  <div class="card">
+    <h3>Todos los ejercicios</h3>
+    <p>Consulta tu progreso en cada ejercicio y elige por cuál continuar.</p>
+    <a href="{{ url_for('lista_ejercicios') }}" class="btn-secondary">Ver ejercicios</a>
+  </div>
+
+  <!-- Última sesión -->
+  {% if ultima_sesion %}
+  <div class="card">
+    <h3>Última sesión</h3>
+    <p>{{ ultima_sesion.nombre_ejercicio() }} — Nivel {{ ultima_sesion.nivel }}</p>
+    <p style="font-size:13px;color:#888;">{{ ultima_sesion.fecha.strftime('%d/%m/%Y a las %H:%M') }}</p>
+    <div class="stats-mini">
+      <span><strong>{{ ultima_sesion.reps_total }}</strong> reps</span>
+      <span><strong>{{ ultima_sesion.hr_medio }}</strong> bpm</span>
+      <span><strong>{{ (ultima_sesion.duracion_s / 60) | round(1) }}</strong> min</span>
+    </div>
+    <a href="{{ url_for('historial') }}" class="btn-secondary">Ver historial</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

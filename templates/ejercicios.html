@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Ejercicios — RehabPlat{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2>Mis ejercicios</h2>
+  <p>Selecciona un ejercicio para continuar tu rehabilitación</p>
+</div>
+
+<div class="ejercicios-grid">
+  {% for ej in ejercicios %}
+  <div class="ejercicio-card {% if ej.completado %}completado{% endif %}">
+    <div class="ejercicio-icono">{{ ej.icono }}</div>
+    <div class="ejercicio-info">
+      <h3>{{ ej.nombre }}</h3>
+      <p>{{ ej.descripcion }}</p>
+      <div class="niveles-bar">
+        {% for n in range(1, 6) %}
+        <div class="nivel-dot {% if ej.nivel_actual > n %}done{% elif ej.nivel_actual == n %}current{% endif %}">
+          {{ n }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="ejercicio-accion">
+      {% if ej.completado %}
+      <span class="badge-completado">Completado</span>
+      <a href="{{ url_for('ejercicio', ejercicio_id=ej.id, nivel=5) }}" class="btn-secondary" style="margin-top:8px;display:block;text-align:center;">Repetir nivel 5</a>
+      {% else %}
+      <a href="{{ url_for('ejercicio', ejercicio_id=ej.id, nivel=ej.nivel_actual) }}" class="btn-primary">
+        Nivel {{ ej.nivel_actual }}
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<style>
+.ejercicios-grid { display: flex; flex-direction: column; gap: 12px; }
+.ejercicio-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 20px; transition: border-color .2s; }
+.ejercicio-card:hover { border-color: #3b82f6; }
+.ejercicio-card.completado { border-color: #10b981; background: #f0fdf4; }
+.ejercicio-icono { width: 52px; height: 52px; background: #eff6ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #3b82f6; flex-shrink: 0; }
+.ejercicio-card.completado .ejercicio-icono { background: #d1fae5; color: #10b981; }
+.ejercicio-info { flex: 1; }
+.ejercicio-info h3 { font-size: 15px; margin-bottom: 4px; }
+.ejercicio-info p { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.4; }
+.niveles-bar { display: flex; gap: 6px; }
+.nivel-dot { width: 28px; height: 28px; border-radius: 50%; background: #f3f4f6; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #9ca3af; }
+.nivel-dot.done { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.nivel-dot.current { background: #fff; border: 2px solid #3b82f6; color: #3b82f6; }
+.ejercicio-accion { flex-shrink: 0; text-align: center; }
+.badge-completado { display: inline-block; background: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+</style>
+{% endblock %}

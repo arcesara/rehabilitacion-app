@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Historial — RehabPlat{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2>Mi historial</h2>
+  <p>Todas tus sesiones de rehabilitación</p>
+</div>
+
+{% if sesiones %}
+<div class="historial-lista">
+  {% for s in sesiones %}
+  <a href="{{ url_for('detalle_sesion', sesion_id=s.id) }}" class="historial-item">
+    <div class="historial-fecha">
+      <strong>{{ s.fecha.strftime('%d %b %Y') }}</strong>
+      <span>{{ s.fecha.strftime('%H:%M') }}</span>
+    </div>
+    <div class="historial-ejercicio">
+      <strong>{{ s.nombre_ejercicio() }}</strong>
+      <span>Nivel {{ s.nivel }}</span>
+    </div>
+    <div class="historial-stats">
+      <span>{{ s.reps_total }} reps</span>
+      <span>{{ s.hr_medio }} bpm</span>
+      <span>{{ (s.duracion_s / 60) | round(1) }} min</span>
+    </div>
+    <div class="historial-arrow">›</div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>Todavía no tienes sesiones registradas</p>
+  <a href="{{ url_for('lista_ejercicios') }}" class="btn-primary">Empezar primer ejercicio</a>
+</div>
+{% endif %}
+
+<style>
+.historial-ejercicio { display: flex; flex-direction: column; font-size: 13px; }
+.historial-ejercicio strong { color: #1d1d1f; }
+.historial-ejercicio span { color: #3b82f6; font-size: 12px; }
+</style>
+{% endblock %}
