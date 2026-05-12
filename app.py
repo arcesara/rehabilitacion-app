@@ -368,6 +368,13 @@ def on_disconnect():
 
 with app.app_context():
     db.create_all()
+    # Crear registro UsuarioActivo si no existe
+    from sqlalchemy import inspect
+    inspector = inspect(db.engine)
+    if 'usuario_activo' in inspector.get_table_names():
+        if UsuarioActivo.query.first() is None:
+            db.session.add(UsuarioActivo(usuario_id=None))
+            db.session.commit()
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
