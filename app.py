@@ -267,6 +267,16 @@ def recibir_datos():
     socketio.emit('datos_sensores', datos)
     return jsonify({'ok': True})
 
+@app.route('/api/usuario_activo', methods=['GET'])
+def usuario_activo():
+    """Devuelve el ID del último usuario que hizo login."""
+    usuario_id = session.get('usuario_id')
+    if usuario_id:
+        usuario = Usuario.query.get(usuario_id)
+        if usuario:
+            return jsonify({'usuario_id': usuario_id, 'nombre': usuario.nombre})
+    return jsonify({'usuario_id': None}), 200
+    
 @app.route('/api/sesion', methods=['POST'])
 def guardar_sesion():
     datos = request.get_json()
