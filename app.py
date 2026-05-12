@@ -1,6 +1,6 @@
 # ============================================================
 # REHABILITACIÓN — Servidor web (versión con ejercicios y niveles)
-# Flask + SocketIO + SQLite
+# Flask + SocketIO + SQLi<te
 # ============================================================
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
@@ -92,6 +92,11 @@ class Usuario(db.Model):
                 return ej_id, nivel
         return list(EJERCICIOS.keys())[0], 1
 
+class UsuarioActivo(db.Model):
+    id         = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 class Progreso(db.Model):
     id           = db.Column(db.Integer, primary_key=True)
     usuario_id   = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
@@ -135,9 +140,18 @@ def login():
         if usuario and usuario.check_password(password):
             session['usuario_id'] = usuario.id
             session['nombre']     = usuario.nombre
+            # Guardar usuario activo en BD para que la RPi lo pueda consultar
+            activo = UsuarioActivo.query.first()
+            if not activo:
+                activo = UsuarioActivo(usuario_id=usuario.id)
+                db.session.add(activo)
+            else:
+                activo.usuario_id = usuario.id
+                activo.updated_at = datetime.utcnow()
+            db.session.commit()
             return redirect(url_for('dashboard'))
-        error = 'Email o contraseña incorrectos'
-    return render_template('login.html', error=error)
+            error = 'Email o contraseña incorrectos'
+        return render_template('login.html', error=error)
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -270,11 +284,11 @@ def recibir_datos():
 @app.route('/api/usuario_activo', methods=['GET'])
 def usuario_activo():
     """Devuelve el ID del último usuario que hizo login."""
-    usuario_id = session.get('usuario_id')
-    if usuario_id:
-        usuario = Usuario.query.get(usuario_id)
+    activo = UsuarioActivo.query.first()
+    if activo and activo.usuario_id:
+        usuario = Usuario.query.get(activo.usuario_id)
         if usuario:
-            return jsonify({'usuario_id': usuario_id, 'nombre': usuario.nombre})
+            return jsonify({'usuario_id': activo.usuario_id, 'nombre': usuario.nombre})
     return jsonify({'usuario_id': None}), 200
     
 @app.route('/api/sesion', methods=['POST'])
