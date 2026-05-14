@@ -11,8 +11,8 @@
   {% for s in sesiones %}
   <a href="{{ url_for('detalle_sesion', sesion_id=s.id) }}" class="historial-item">
     <div class="historial-fecha">
-    <strong>{{ s.fecha.strftime('%d %b %Y') }}</strong>
-    <span>{{ s.fecha.strftime('%H:%M') }}</span>
+    <strong>{{ s.fecha_local.strftime('%d %b %Y') }}</strong>
+    <span>{{ s.fecha_local.strftime('%H:%M') }}</span>
     </div>
     <div class="historial-ejercicio">
       <strong>{{ s.nombre_ejercicio() }}</strong>
