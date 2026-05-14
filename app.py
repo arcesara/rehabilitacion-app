@@ -237,13 +237,19 @@ def usuario_activo():
         if usuario:
             return jsonify({'usuario_id': activo.usuario_id, 'nombre': usuario.nombre})
     return jsonify({'usuario_id': None}), 200
-
+    
 @app.route('/api/datos', methods=['POST'])
 def recibir_datos():
     datos = request.get_json()
     if not datos:
         return jsonify({'error': 'Sin datos'}), 400
-    socketio.emit('datos_sensores', datos)
+    if datos.get('tipo') == 'rep_completada':
+        socketio.emit('rep_completada', {
+            'rep':   datos.get('rep'),
+            'total': datos.get('total'),
+        })
+    else:
+        socketio.emit('datos_sensores', datos)
     return jsonify({'ok': True})
 
 @app.route('/api/sesion', methods=['POST'])
