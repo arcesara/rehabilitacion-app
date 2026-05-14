@@ -12,6 +12,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:/
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+@app.template_filter('hora_local')
+def hora_local(dt):
+    from datetime import timedelta
+    return dt + timedelta(hours=2)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 EJERCICIOS = {
@@ -69,7 +73,7 @@ class Sesion(db.Model):
     usuario_id   = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     ejercicio_id = db.Column(db.String(50), default="sentadillas")
     nivel        = db.Column(db.Integer, default=1)
-    fecha        = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha        = db.Column(db.DateTime, default=lambda: datetime.utcnow())
     duracion_s   = db.Column(db.Float, default=0)
     reps_total   = db.Column(db.Integer, default=0)
     hr_medio     = db.Column(db.Float, default=0)
