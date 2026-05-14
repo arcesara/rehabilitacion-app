@@ -87,6 +87,13 @@ class UsuarioActivo(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class EjercicioActivo(db.Model):
+    id           = db.Column(db.Integer, primary_key=True)
+    usuario_id   = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    ejercicio_id = db.Column(db.String(50), default='sentadillas')
+    nivel        = db.Column(db.Integer, default=1)
+    updated_at   = db.Column(db.DateTime, default=datetime.utcnow)
+
 @app.route('/')
 def index():
     if 'usuario_id' not in session:
@@ -193,11 +200,24 @@ def lista_ejercicios():
 @app.route('/ejercicio/<ejercicio_id>/<int:nivel>')
 def ejercicio(ejercicio_id, nivel):
     if 'usuario_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('lista_ejercicios'))
     if ejercicio_id not in EJERCICIOS or nivel not in NIVELES:
         return redirect(url_for('lista_ejercicios'))
+
     ej_info      = EJERCICIOS[ejercicio_id]
     nivel_config = NIVELES[nivel]
+
+    # Guardar ejercicio activo en BD para que la RPi lo consulte
+    activo = EjercicioActivo.query.filter_by(
+        usuario_id=session['usuario_id']).first()
+    if not activo:
+        activo = EjercicioActivo(usuario_id=session['usuario_id'])
+        db.session.add(activo)
+    activo.ejercicio_id = ejercicio_id
+    activo.nivel        = nivel
+    activo.updated_at   = datetime.utcnow()
+    db.session.commit()
+
     return render_template('ejercicio.html',
         nombre=session['nombre'],
         ejercicio_id=ejercicio_id,
@@ -237,6 +257,26 @@ def usuario_activo():
         if usuario:
             return jsonify({'usuario_id': activo.usuario_id, 'nombre': usuario.nombre})
     return jsonify({'usuario_id': None}), 200
+
+@app.route('/api/ejercicio_activo', methods=['GET'])
+def ejercicio_activo():
+    """Devuelve el ejercicio y nivel que el usuario tiene abierto en la web."""
+    activo = EjercicioActivo.query.order_by(
+        EjercicioActivo.updated_at.desc()).first()
+    if activo:
+        nivel_config = NIVELES.get(activo.nivel, NIVELES[1])
+        return jsonify({
+            'ejercicio_id': activo.ejercicio_id,
+            'nivel':        activo.nivel,
+            'reps':         nivel_config['reps'],
+            'intervalo_ms': nivel_config['intervalo_ms'],
+        })
+    return jsonify({
+        'ejercicio_id': 'sentadillas',
+        'nivel':        1,
+        'reps':         5,
+        'intervalo_ms': 8000,
+    })
     
 @app.route('/api/datos', methods=['POST'])
 def recibir_datos():
