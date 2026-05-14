@@ -240,10 +240,13 @@ def historial():
     if usuario is None:
         session.clear()
         return redirect(url_for('login'))
+    from datetime import timedelta
     sesiones = Sesion.query.filter_by(usuario_id=session['usuario_id'])\
                            .order_by(Sesion.fecha.desc()).all()
+    for s in sesiones:
+        s.fecha_local = s.fecha + timedelta(hours=2)
     return render_template('historial.html', sesiones=sesiones, ejercicios=EJERCICIOS)
-
+    
 @app.route('/sesion/<int:sesion_id>')
 def detalle_sesion(sesion_id):
     if 'usuario_id' not in session:
